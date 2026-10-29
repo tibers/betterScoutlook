@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scoutlook — Scoutbook Plus Adventure Assigner</title>
+  <style>
+    :root {
+      --navy: #003f87;
+      --navy-dark: #002856;
+      --red: #ce1126;
+      --gold: #f5b700;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --border: #dce2ec;
+      --text: #1c2738;
+      --muted: #5a687d;
+      --success: #15803d;
+      --success-bg: #dcfce7;
+      --warn-bg: #fef9c3;
+      --warn-text: #854d0e;
+      --danger-bg: #fee2e2;
+      --danger-text: #b91c1c;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* Top Header */
+    header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -0.2px;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      font-weight: 600;
+    }
+
+    .status-pill.demo {
+      background: var(--gold);
+      color: var(--navy-dark);
+      border-color: var(--gold);
+    }
+
+    .status-pill.live {
+      background: #16a34a;
+      color: #fff;
+      border-color: #22c55e;
+    }
+
+    select.unit-select {
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 220px;
+    }
+
+    /* Buttons */
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 7px;
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+
+    button:hover {
+      background: #f0f4f9;
+    }
+
+    button.primary {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    button.primary:hover {
+      background: var(--navy-dark);
+    }
+
+    button.accent {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
+    }
+
+    button.accent:hover {
+      background: #a90d1e;
+    }
+
+    button.gold {
+      background: var(--gold);
+      color: var(--navy-dark);
+      border-color: #e0a800;
+    }
+
+    button.gold:hover {
+      background: #e5aa00;
+    }
+
+    button.sm {
+      padding: 4px 9px;
+      font-size: 12px;
+    }
+
+    /* Layout Grid */
+    .workspace {
+      max-width: 1480px;
+      margin: 18px auto;
+      padding: 0 18px 32px;
+      display: grid;
+      grid-template-columns: 1fr 430px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Inputs */
+    label.field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 11px;
+      font-size: 13.5px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 2px rgba(0, 63, 135, 0.14);
+    }
+
+    .row-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-group input {
+      flex: 1;
+    }
+
+    /* Den & Rank Pills */
+    .pills-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 8px 0 12px;
+    }
+
+    .pill {
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.12s;
+    }
+
+    .pill:hover {
+      border-color: var(--navy);
+      background: #eef4fb;
+    }
+
+    .pill.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    /* Scope Radio Tabs */
+    .scope-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .scope-tab {
+      flex: 1;
+      min-width: 150px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f9fbfd;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .scope-tab.active {
+      border-color: var(--navy);
+      background: #edf4fc;
+      color: var(--navy-dark);
+    }
+
+    /* Requirements Checklist */
+    .req-list {
+      max-height: 210px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      background: #fafbfc;
+    }
+
+    .req-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 6px 8px;
+      border-bottom: 1px solid #eef1f6;
+      font-size: 13px;
+    }
+
+    .req-item:last-child {
+      border-bottom: none;
+    }
+
+    .req-num {
+      font-weight: 700;
+      color: var(--navy);
+      min-width: 32px;
+    }
+
+    /* Roster Table */
+    .roster-wrapper {
+      max-height: 330px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table.roster-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.roster-table th {
+      position: sticky;
+      top: 0;
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      z-index: 1;
+    }
+
+    table.roster-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f3f8;
+    }
+
+    table.roster-table tr:hover {
+      background: #f5f9ff;
+    }
+
+    table.roster-table tr.selected-row {
+      background: #e8f1fc;
+    }
+
+    .badge-den {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    /* Chatbot Panel */
+    .chat-panel {
+      position: sticky;
+      top: 18px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 105px);
+      min-height: 560px;
+      max-height: 820px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: var(--navy-dark);
+      color: #fff;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .chat-examples {
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .chat-chip {
+      font-size: 11.5px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      color: var(--navy-dark);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .chat-chip:hover {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafc;
+    }
+
+    .chat-bubble {
+      max-width: 92%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: var(--navy);
+      color: #fff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .chat-bubble.bot {
+      align-self: flex-start;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-bubble code {
+      background: rgba(0, 0, 0, 0.06);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+
+    .chat-bubble.user code {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .chat-input-bar {
+      padding: 10px 12px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Alert banners & Payload inspector */
+    .banner {
+      padding: 10px 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .banner.show {
+      display: block;
+    }
+
+    .banner.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid #86efac;
+    }
+
+    .banner.warn {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border: 1px solid #fde047;
+    }
+
+    .banner.error {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: 1px solid #fca5a5;
+    }
+
+    pre.payload-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      overflow-x: auto;
+      max-height: 280px;
+      margin: 8px 0 0;
+    }
+
+    /* Login Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 460px;
+      width: 100%;
+      padding: 22px 24px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal h3 {
+      margin: 0 0 6px;
+      color: var(--navy-dark);
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .tab-btn {
+      border: none;
+      background: none;
+      padding: 8px 4px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+    }
+
+    .tab-btn.active {
+      color: var(--navy);
+      border-bottom-color: var(--navy);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <div>
+        <h1>Scoutlook — Adventure Assigner</h1>
+        <p>Scoutbook Plus (`advancements.scouting.org`) Bulk &amp; Chat Interface</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <span id="authStatusPill" class="status-pill">Not Signed In</span>
+      <select id="unitSelect" class="unit-select" onchange="onUnitChange()">
+        <option value="">Select Unit...</option>
+      </select>
+      <button class="sm" onclick="refreshRoster()" title="Reload unit roster and dens">↻ Refresh</button>
+      <button class="gold sm" onclick="loginDemo()">Try Demo Pack</button>
+      <button class="sm" onclick="openLoginModal()">Sign In (`scouting.org`)</button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+
+    <!-- Left Column: Visual Adventure & Scout Selector -->
+    <div>
+      <div id="globalBanner" class="banner"></div>
+
+      <!-- STEP 1: Select Adventure -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step-num">1</span> Select Cub Scout Adventure</h2>
+          <span id="selectedAdvBadge" class="mono" style="font-weight:600;color:var(--navy);"></span>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="field-label">Paste Adventure URL or Adventure ID</label>
+          <div class="input-group">
+            <input
+              type="text"
+              id="adventureUrlInput"
+              placeholder="e.g. https://advancements.scouting.org/youthProfile/15005204/adventures/119 or 119"
+              onkeydown="if(event.key==='Enter') parseAdventureUrl()"
+            />
+            <button class="primary" onclick="parseAdventureUrl()">Load URL / ID</button>
+          </div>
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:6px;cursor:pointer;">
+            <input type="checkbox" id="autoSelectUrlScout" checked />
+            Automatically check the scout in the roster if the URL includes `/youthProfile/{userId}`
+          </label>
+        </div>
+
+        <div class="row-grid">
+          <div>
+            <label class="field-label">Filter by Cub Scout Rank</label>
+            <select id="rankFilterSelect" onchange="renderAdventureDropdown()">
+              <option value="">All Cub Scout Ranks</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Adventure</label>
+            <select id="adventureSelect" onchange="onAdventureSelectChange()">
+              <option value="">Select an Adventure...</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Curriculum Version</label>
+            <select id="versionSelect" onchange="onVersionSelectChange()">
+              <option value="">Active Version</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Scope Selection -->
+        <label class="field-label" style="margin-top: 10px;">Assignment Scope</label>
+        <div class="scope-tabs">
+          <div id="scopeWhole" class="scope-tab active" onclick="setScopeMode('whole_adventure')">
+            <input type="radio" name="scopeMode" checked />
+            <div>
+              <div>Entire Adventure</div>
+              <div style="font-size:11px;color:var(--muted);font-weight:400;">Marks overall adventure</div>
+            </div>
+          </div>
+          <div id="scopeAllReqs" class="scope-tab" onclick="setScopeMode('all_requirements')">
+            <input type="radio" name="scopeMode" />
+            <div>
+              <div>All Requirements</div>
+              <div style="font-size:11px;color:var(--muted);font-weight:400;">Marks every requirement</div>
+            </div>
+          </div>
+          <div id="scopeSomeReqs" class="scope-tab" onclick="setScopeMode('requirements')">
+            <input type="radio" name="scopeMode" />
+            <div>
+              <div>Specific Requirements</div>
+              <div style="font-size:11px;color:var(--muted);font-weight:400;">Pick individual reqs below</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="requirementsContainer" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="field-label" style="margin:0;">Adventure Requirements</label>
+            <div>
+              <button class="sm" onclick="toggleAllReqs(true)">Check All</button>
+              <button class="sm" onclick="toggleAllReqs(false)">Uncheck All</button>
+            </div>
+          </div>
+          <div id="requirementsList" class="req-list">
+            <div style="padding:10px;color:var(--muted);font-size:13px;">Select an adventure to view requirements.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Select Scouts by Den, Name, or Scouting Number -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step-num">2</span> Select Scouts (by Den, Name, or Scouting Number)</h2>
+          <div>
+            <span id="selectedScoutCount" style="font-size:13px;font-weight:700;color:var(--navy);margin-right:8px;">0 selected</span>
+            <button class="sm" onclick="selectAllVisibleScouts(true)">Select Visible</button>
+            <button class="sm" onclick="selectAllVisibleScouts(false)">Clear All</button>
+          </div>
+        </div>
+
+        <!-- Den Quick-Select Pills -->
+        <label class="field-label">Click a Den to Select / Toggle All Scouts in Den</label>
+        <div id="denPillsBar" class="pills-bar">
+          <span style="font-size:12.5px;color:var(--muted);">Sign in or load Demo Pack to view dens.</span>
+        </div>
+
+        <!-- Multi-Identifier Resolver & Search -->
+        <div class="row-grid" style="margin-top:10px;">
+          <div>
+            <label class="field-label">Quick Match by Name, BSA Member ID, User ID, or Den</label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="bulkMatchInput"
+                placeholder="e.g. 15005204, 140882312, Liam Carter, Wolf Den 3"
+                onkeydown="if(event.key==='Enter') resolveBulkScouts()"
+              />
+              <button class="primary" onclick="resolveBulkScouts()">Match &amp; Check</button>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Filter Roster Table</label>
+            <input
+              type="text"
+              id="rosterFilterInput"
+              placeholder="Filter table by name, den, or number..."
+              oninput="renderRosterTable()"
+            />
+          </div>
+        </div>
+
+        <!-- Roster Table -->
+        <div class="roster-wrapper">
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th style="width:36px;"><input type="checkbox" id="masterScoutCheckbox" onchange="selectAllVisibleScouts(this.checked)" /></th>
+                <th>Scout Name</th>
+                <th>Den</th>
+                <th>Rank</th>
+                <th>BSA Member ID (`memberId`)</th>
+                <th>Scoutbook ID (`userId`)</th>
+              </tr>
+            </thead>
+            <tbody id="rosterTableBody">
+              <tr>
+                <td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">
+                  No roster loaded yet. Click <strong>Try Demo Pack</strong> or <strong>Sign In</strong> above.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3: Status, Date & Assignment Execution -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><span class="step-num">3</span> Record Status &amp; Submit to Scoutbook Plus</h2>
+        </div>
+
+        <div class="row-grid">
+          <div>
+            <label class="field-label">Advancement Status</label>
+            <select id="statusSelect">
+              <option value="started">Started</option>
+              <option value="completed">Completed (Unapproved)</option>
+              <option value="approved" selected>Completed + Leader Approved</option>
+              <option value="awarded">Completed + Leader Approved + Awarded</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Date (Started / Completed)</label>
+            <input type="date" id="completionDateInput" />
+          </div>
+          <div>
+            <label class="field-label">Quick Entry Comment (Optional)</label>
+            <input type="text" id="commentInput" placeholder="e.g. Completed at Pack hike" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;">
+          <button class="accent" style="padding:10px 18px;font-size:14px;" onclick="submitAssignment(false)">
+            ✓ Assign Adventure to Selected Scouts
+          </button>
+          <button class="primary" onclick="submitAssignment(true)">
+            Preview API Payload (Dry Run)
+          </button>
+        </div>
+
+        <div id="payloadPreviewContainer" style="display:none;margin-top:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="field-label" id="payloadEndpointLabel" style="margin:0;color:var(--navy);"></span>
+            <button class="sm" onclick="document.getElementById('payloadPreviewContainer').style.display='none'">Hide</button>
+          </div>
+          <pre id="payloadPreviewBox" class="payload-box"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Conversational Chatbot Assistant -->
+    <div class="card chat-panel">
+      <div class="chat-header">
+        <div>
+          <h2>Scoutlook Chatbot Assistant</h2>
+          <div style="font-size:11.5px;color:rgba(255,255,255,0.75);">
+            Assign by URL, adventure name, den, scout name, or BSA number
+          </div>
+        </div>
+        <button class="sm" style="background:rgba(255,255,255,0.15);color:#fff;border:none;" onclick="sendQuickChat('help')">Help</button>
+      </div>
+
+      <div class="chat-examples">
+        <span class="chat-chip" onclick="sendQuickChat('Assign https://advancements.scouting.org/youthProfile/15005204/adventures/119 to Wolf Den 3 as approved')">
+          URL #119 → Wolf Den 3
+        </span>
+        <span class="chat-chip" onclick="sendQuickChat('Assign Paws on the Path requirements 1, 2 to Liam Carter and 140882312 as completed')">
+          Reqs 1, 2 → Name &amp; BSA ID
+        </span>
+        <span class="chat-chip" onclick="sendQuickChat('Who is in Tiger Den 2?')">
+          Who is in Tiger Den 2?
+        </span>
+        <span class="chat-chip" onclick="sendQuickChat('confirm')">
+          Confirm Staged
+        </span>
+      </div>
+
+      <div id="chatMessages" class="chat-messages">
+        <div class="chat-bubble bot">
+          Welcome to <strong>Scoutlook</strong>! You can use the visual controls on the left or type a command here, such as:<br/><br/>
+          <code>Assign https://advancements.scouting.org/youthProfile/15005204/adventures/119 to Wolf Den 3 as approved</code>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Ask or assign (e.g., Assign adventure 119 to Wolf Den 3)..."
+          onkeydown="if(event.key==='Enter') sendChatMessage()"
+        />
+        <button class="primary" onclick="sendChatMessage()">Send</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sign-In Modal -->
+  <div id="loginModal" class="modal-backdrop">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Sign In to Scouting America</h3>
+        <button class="sm" onclick="closeLoginModal()">✕</button>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:4px 0 12px;">
+        Authenticates directly against <code>https://auth.scouting.org</code> using your My.Scouting / Scoutbook Plus leader credentials.
+      </p>
+
+      <div class="tab-bar">
+        <button id="tabBtnCreds" class="tab-btn active" onclick="switchLoginTab('creds')">Username &amp; Password</button>
+        <button id="tabBtnToken" class="tab-btn" onclick="switchLoginTab('token')">Bearer JWT Token</button>
+      </div>
+
+      <div id="loginErrorBanner" class="banner error"></div>
+
+      <div id="loginTabCreds">
+        <div style="margin-bottom:10px;">
+          <label class="field-label">My.Scouting Username</label>
+          <input type="text" id="loginUsername" placeholder="username" autocomplete="username" />
+        </div>
+        <div style="margin-bottom:14px;">
+          <label class="field-label">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitLoginCreds()" />
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="gold" onclick="loginDemo(); closeLoginModal();">Use Demo Pack Instead</button>
+          <button class="primary" onclick="submitLoginCreds()">Sign In</button>
+        </div>
+      </div>
+
+      <div id="loginTabToken" style="display:none;">
+        <div style="margin-bottom:14px;">
+          <label class="field-label">JWT Bearer Token from advancements.scouting.org</label>
+          <textarea id="loginTokenInput" rows="4" placeholder="eyJhbGciOi..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="primary" onclick="submitLoginToken()">Connect with Token</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Application State
+    const state = {
+      authenticated: false,
+      demoMode: false,
+      orgGuid: "",
+      units: [],
+      ranks: [],
+      adventures: [],
+      currentRequirements: [],
+      scouts: [],
+      dens: [],
+      selectedUserIds: new Set(),
+      selectedReqIds: new Set(),
+      scopeMode: "whole_adventure", // "whole_adventure" | "all_requirements" | "requirements"
+      selectedAdventureId: null,
+      selectedVersionId: null,
+    };
+
+    // Initialize date picker & session on page load
+    window.addEventListener("DOMContentLoaded", async () => {
+      document.getElementById("completionDateInput").value = new Date().toISOString().slice(0, 10);
+      await checkSession();
+    });
+
+    function showBanner(msg, type = "success") {
+      const el = document.getElementById("globalBanner");
+      el.className = `banner show ${type}`;
+      el.innerHTML = msg;
+    }
+
+    async function checkSession() {
+      try {
+        const res = await fetch("/api/session");
+        const data = await res.json();
+        if (data.authenticated) {
+          await onAuthenticated(data);
+        } else {
+          // Automatically start in Demo Mode so the interface is immediately interactive,
+          // while allowing the leader to click "Sign In (scouting.org)" at any time.
+          await loginDemo(true);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loginDemo(silent = false) {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ demo: true }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        await onAuthenticated(data);
+        if (!silent) {
+          showBanner(
+            "Loaded <strong>Demo Pack 314</strong> (includes Scout <code>15005204</code> Liam Carter, Wolf Den 3, and Adventure <code>#119</code> Paws on the Path). Click <strong>Sign In</strong> top-right to connect your live Scouting.org account.",
+            "warn"
+          );
+        }
+      }
+    }
+
+    async function onAuthenticated(data) {
+      state.authenticated = true;
+      state.demoMode = Boolean(data.demo_mode);
+      state.units = data.units || [];
+
+      const pill = document.getElementById("authStatusPill");
+      if (state.demoMode) {
+        pill.className = "status-pill demo";
+        pill.textContent = "Demo Mode: Pack 314";
+      } else {
+        pill.className = "status-pill live";
+        const name = [data.first_name, data.last_name].filter(Boolean).join(" ") || "Leader";
+        pill.textContent = `Connected: ${name}`;
+      }
+
+      const unitSel = document.getElementById("unitSelect");
+      unitSel.innerHTML = "";
+      for (const u of state.units) {
+        const opt = document.createElement("option");
+        opt.value = u.organization_guid;
+        opt.textContent = u.name || u.organization_guid;
+        unitSel.appendChild(opt);
+      }
+
+      if (state.units.length > 0) {
+        state.orgGuid = state.units[0].organization_guid;
+        unitSel.value = state.orgGuid;
+      }
+
+      await Promise.all([loadAdventures(), loadRoster()]);
+    }
+
+    async function onUnitChange() {
+      state.orgGuid = document.getElementById("unitSelect").value;
+      state.selectedUserIds.clear();
+      await loadRoster();
+    }
+
+    async function refreshRoster() {
+      await Promise.all([loadAdventures(true), loadRoster(true)]);
+      showBanner("Refreshed unit roster, dens, and adventures.", "success");
+    }
+
+    async function loadAdventures(refresh = false) {
+      const res = await fetch(`/api/adventures?refresh=${refresh}`);
+      const data = await res.json();
+      if (!data.ok) return;
+      state.ranks = data.ranks || [];
+      state.adventures = data.adventures || [];
+
+      const rankSel = document.getElementById("rankFilterSelect");
+      rankSel.innerHTML = `<option value="">All Cub Scout Ranks</option>`;
+      for (const r of state.ranks) {
+        const opt = document.createElement("option");
+        opt.value = String(r.id);
+        opt.textContent = r.name;
+        rankSel.appendChild(opt);
+      }
+
+      renderAdventureDropdown();
+      // Default select Adventure 119 if present and nothing selected yet
+      if (!state.selectedAdventureId && state.adventures.some(a => a.id === 119)) {
+        await selectAdventureById(119);
+      }
+    }
+
+    function renderAdventureDropdown() {
+      const rankIdFilter = document.getElementById("rankFilterSelect").value;
+      const advSel = document.getElementById("adventureSelect");
+      const currentVal = state.selectedAdventureId ? String(state.selectedAdventureId) : "";
+
+      advSel.innerHTML = `<option value="">Select an Adventure...</option>`;
+      for (const adv of state.adventures) {
+        if (rankIdFilter && String(adv.rank_id) !== rankIdFilter) continue;
+        const opt = document.createElement("option");
+        opt.value = String(adv.id);
+        const reqLabel = adv.is_required ? "Required" : "Elective";
+        opt.textContent = `[${adv.rank_name}] ${adv.name} (#${adv.id} - ${reqLabel})`;
+        advSel.appendChild(opt);
+      }
+      if (currentVal) {
+        advSel.value = currentVal;
+      }
+    }
+
+    async function onAdventureSelectChange() {
+      const val = document.getElementById("adventureSelect").value;
+      if (!val) return;
+      await selectAdventureById(parseInt(val, 10));
+    }
+
+    async function selectAdventureById(advId, preferredVersionId = null) {
+      state.selectedAdventureId = advId;
+      document.getElementById("rankFilterSelect").value = "";
+      renderAdventureDropdown();
+      document.getElementById("adventureSelect").value = String(advId);
+
+      const q = preferredVersionId ? `?version_id=${preferredVersionId}` : "";
+      const res = await fetch(`/api/adventures/${advId}/requirements${q}`);
+      const data = await res.json();
+      if (!data.ok) {
+        showBanner(data.error || "Could not load adventure details.", "error");
+        return;
+      }
+
+      const adv = data.adventure || {};
+      state.selectedVersionId = data.version_id || adv.active_version_id || null;
+      state.currentRequirements = data.requirements || [];
+
+      document.getElementById("selectedAdvBadge").textContent =
+        `#${adv.id} ${adv.name} (${adv.rank_name || "Cub Scout"})`;
+
+      // Populate versions dropdown
+      const verSel = document.getElementById("versionSelect");
+      verSel.innerHTML = "";
+      const versions = adv.versions && adv.versions.length
+        ? adv.versions
+        : [{ versionId: state.selectedVersionId || 1, version: "Current" }];
+      for (const v of versions) {
+        const opt = document.createElement("option");
+        opt.value = String(v.versionId);
+        opt.textContent = `${v.version || "Version"} (versionId: ${v.versionId})`;
+        verSel.appendChild(opt);
+      }
+      if (state.selectedVersionId) {
+        verSel.value = String(state.selectedVersionId);
+      }
+
+      // Default select all requirements in checklist
+      state.selectedReqIds = new Set(state.currentRequirements.map(r => r.id));
+      renderRequirementsList();
+    }
+
+    async function onVersionSelectChange() {
+      const vid = parseInt(document.getElementById("versionSelect").value, 10);
+      if (state.selectedAdventureId && vid) {
+        await selectAdventureById(state.selectedAdventureId, vid);
+      }
+    }
+
+    function renderRequirementsList() {
+      const container = document.getElementById("requirementsList");
+      if (!state.currentRequirements.length) {
+        container.innerHTML = `<div style="padding:10px;color:var(--muted);">No individual requirements found for this adventure version.</div>`;
+        return;
+      }
+      container.innerHTML = "";
+      for (const r of state.currentRequirements) {
+        const checked = state.selectedReqIds.has(r.id) ? "checked" : "";
+        const div = document.createElement("label");
+        div.className = "req-item";
+        div.style.cursor = "pointer";
+        div.innerHTML = `
+          <input type="checkbox" ${checked} onchange="toggleReqId(${r.id}, this.checked)" />
+          <span class="req-num">${r.requirementNumber || r.id}</span>
+          <span>${r.description || r.name}</span>
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    function toggleReqId(reqId, checked) {
+      if (checked) state.selectedReqIds.add(reqId);
+      else state.selectedReqIds.delete(reqId);
+    }
+
+    function toggleAllReqs(checked) {
+      if (checked) {
+        state.selectedReqIds = new Set(state.currentRequirements.map(r => r.id));
+      } else {
+        state.selectedReqIds.clear();
+      }
+      renderRequirementsList();
+    }
+
+    function setScopeMode(mode) {
+      state.scopeMode = mode;
+      document.getElementById("scopeWhole").classList.toggle("active", mode === "whole_adventure");
+      document.getElementById("scopeAllReqs").classList.toggle("active", mode === "all_requirements");
+      document.getElementById("scopeSomeReqs").classList.toggle("active", mode === "requirements");
+
+      document.querySelector("#scopeWhole input").checked = mode === "whole_adventure";
+      document.querySelector("#scopeAllReqs input").checked = mode === "all_requirements";
+      document.querySelector("#scopeSomeReqs input").checked = mode === "requirements";
+
+      document.getElementById("requirementsContainer").style.display =
+        mode === "requirements" ? "block" : "none";
+    }
+
+    async function parseAdventureUrl() {
+      const ref = document.getElementById("adventureUrlInput").value.trim();
+      if (!ref) return;
+      const res = await fetch("/api/parse-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference: ref, org_guid: state.orgGuid }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        showBanner(data.error || "Could not parse URL/ID.", "error");
+        return;
+      }
+
+      await selectAdventureById(data.adventure_id);
+      let msg = `Selected Adventure <strong>#${data.adventure_id}</strong> (${data.adventure?.name || ""}).`;
+
+      if (data.user_id && document.getElementById("autoSelectUrlScout").checked) {
+        const uid = Number(data.user_id);
+        if (state.scouts.some(s => s.user_id === uid)) {
+          state.selectedUserIds.add(uid);
+          renderRosterTable();
+          renderDenPills();
+          const sc = state.scouts.find(s => s.user_id === uid);
+          msg += ` Also selected Scout <strong>${sc.display_name}</strong> (User ID <code>${uid}</code>) from URL.`;
+        }
+      }
+      showBanner(msg, "success");
+    }
+
+    async function loadRoster(refresh = false) {
+      if (!state.orgGuid) return;
+      const res = await fetch(`/api/units/${encodeURIComponent(state.orgGuid)}/roster?refresh=${refresh}`);
+      const data = await res.json();
+      if (!data.ok) return;
+      state.scouts = data.scouts || [];
+      state.dens = data.dens || [];
+      renderDenPills();
+      renderRosterTable();
+    }
+
+    function renderDenPills() {
+      const bar = document.getElementById("denPillsBar");
+      bar.innerHTML = "";
+      if (!state.dens.length) {
+        bar.innerHTML = `<span style="font-size:12.5px;color:var(--muted);">No sub-unit dens configured for this unit.</span>`;
+        return;
+      }
+
+      for (const d of state.dens) {
+        const denScouts = state.scouts.filter(s => (s.dens || []).includes(d.name));
+        const allSelected = denScouts.length > 0 && denScouts.every(s => state.selectedUserIds.has(s.user_id));
+        const span = document.createElement("span");
+        span.className = `pill ${allSelected ? "active" : ""}`;
+        span.textContent = `${d.name} (${denScouts.length})`;
+        span.onclick = () => toggleDenSelection(d.name);
+        bar.appendChild(span);
+      }
+    }
+
+    function toggleDenSelection(denName) {
+      const denScouts = state.scouts.filter(s => (s.dens || []).includes(denName));
+      const allSelected = denScouts.length > 0 && denScouts.every(s => state.selectedUserIds.has(s.user_id));
+      for (const s of denScouts) {
+        if (allSelected) state.selectedUserIds.delete(s.user_id);
+        else state.selectedUserIds.add(s.user_id);
+      }
+      renderDenPills();
+      renderRosterTable();
+    }
+
+    function renderRosterTable() {
+      const tbody = document.getElementById("rosterTableBody");
+      const filterText = (document.getElementById("rosterFilterInput").value || "").trim().toLowerCase();
+
+      const visible = state.scouts.filter(s => {
+        if (!filterText) return true;
+        return (
+          s.display_name.toLowerCase().includes(filterText) ||
+          s.display_dens.toLowerCase().includes(filterText) ||
+          String(s.member_id).toLowerCase().includes(filterText) ||
+          String(s.user_id).toLowerCase().includes(filterText) ||
+          (s.current_rank || "").toLowerCase().includes(filterText)
+        );
+      });
+
+      document.getElementById("selectedScoutCount").textContent =
+        `${state.selectedUserIds.size} of ${state.scouts.length} selected`;
+
+      if (!visible.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:18px;color:var(--muted);">No matching scouts found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = "";
+      for (const s of visible) {
+        const isChecked = state.selectedUserIds.has(s.user_id);
+        const tr = document.createElement("tr");
+        if (isChecked) tr.className = "selected-row";
+        tr.style.cursor = "pointer";
+        tr.onclick = (e) => {
+          if (e.target.tagName.toLowerCase() === "input") return;
+          toggleScoutCheckbox(s.user_id, !state.selectedUserIds.has(s.user_id));
+        };
+        tr.innerHTML = `
+          <td><input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleScoutCheckbox(${s.user_id}, this.checked)" /></td>
+          <td style="font-weight:600;">${s.display_name}</td>
+          <td><span class="badge-den">${s.display_dens}</span></td>
+          <td>${s.current_rank || "—"}</td>
+          <td class="mono">${s.member_id || "—"}</td>
+          <td class="mono">${s.user_id}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function toggleScoutCheckbox(userId, checked) {
+      if (checked) state.selectedUserIds.add(userId);
+      else state.selectedUserIds.delete(userId);
+      renderDenPills();
+      renderRosterTable();
+    }
+
+    function selectAllVisibleScouts(checked) {
+      const filterText = (document.getElementById("rosterFilterInput").value || "").trim().toLowerCase();
+      for (const s of state.scouts) {
+        const matches =
+          !filterText ||
+          s.display_name.toLowerCase().includes(filterText) ||
+          s.display_dens.toLowerCase().includes(filterText) ||
+          String(s.member_id).toLowerCase().includes(filterText) ||
+          String(s.user_id).toLowerCase().includes(filterText);
+        if (matches) {
+          if (checked) state.selectedUserIds.add(s.user_id);
+          else state.selectedUserIds.delete(s.user_id);
+        }
+      }
+      document.getElementById("masterScoutCheckbox").checked = checked;
+      renderDenPills();
+      renderRosterTable();
+    }
+
+    async function resolveBulkScouts() {
+      const raw = document.getElementById("bulkMatchInput").value.trim();
+      if (!raw) return;
+      const tokens = raw.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
+      const res = await fetch("/api/resolve-scouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ org_guid: state.orgGuid, query_tokens: tokens }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        showBanner(data.error || "Failed to resolve scouts.", "error");
+        return;
+      }
+      for (const s of data.matched || []) {
+        state.selectedUserIds.add(s.user_id);
+      }
+      renderDenPills();
+      renderRosterTable();
+
+      let msg = `Matched and selected <strong>${(data.matched || []).length}</strong> scout(s).`;
+      if (data.unmatched && data.unmatched.length) {
+        msg += ` Unmatched queries: <code>${data.unmatched.join(", ")}</code>`;
+        showBanner(msg, "warn");
+      } else {
+        showBanner(msg, "success");
+      }
+    }
+
+    async function submitAssignment(dryRun = false) {
+      if (!state.selectedAdventureId) {
+        showBanner("Please select an adventure in Step 1 first.", "error");
+        return;
+      }
+      const userIds = Array.from(state.selectedUserIds);
+      if (!userIds.length) {
+        showBanner("Please select at least one scout in Step 2.", "error");
+        return;
+      }
+
+      const payload = {
+        org_guid: state.orgGuid,
+        adventure_id: state.selectedAdventureId,
+        user_ids: userIds,
+        status: document.getElementById("statusSelect").value,
+        mode: state.scopeMode,
+        requirement_ids: Array.from(state.selectedReqIds),
+        version_id: state.selectedVersionId,
+        completion_date: document.getElementById("completionDateInput").value,
+        comment: document.getElementById("commentInput").value,
+        dry_run: dryRun,
+      };
+
+      const res = await fetch("/api/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        showBanner(data.error || "Assignment failed.", "error");
+        return;
+      }
+
+      // Show API payload inspector
+      document.getElementById("payloadPreviewContainer").style.display = "block";
+      document.getElementById("payloadEndpointLabel").textContent = data.endpoint || "API Payload";
+      document.getElementById("payloadPreviewBox").textContent = JSON.stringify(
+        data.payload,
+        null,
+        2
+      );
+
+      if (dryRun) {
+        showBanner(
+          `Dry-run preview generated for <strong>${data.adventure_name}</strong> (#${data.adventure_id}) across <strong>${data.scout_count} scout(s)</strong>.`,
+          "warn"
+        );
+      } else {
+        const modeTag = data.demo_mode ? " (Demo Pack Simulation)" : "";
+        showBanner(
+          `Successfully assigned <strong>${data.adventure_name}</strong> (#${data.adventure_id}) to <strong>${data.scout_count} scout(s)</strong> as <strong>${data.status.toUpperCase()}</strong>${modeTag}!`,
+          "success"
+        );
+      }
+    }
+
+    // Chatbot functions
+    function formatMarkdownSimple(md) {
+      if (!md) return "";
+      let html = md
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      html = html.replace(/^### (.+)$/gm, "<strong style='font-size:14px;display:block;margin-bottom:4px;color:var(--navy-dark);'>$1</strong>");
+      html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\n/g, "<br/>");
+      return html;
+    }
+
+    function appendChatBubble(text, role = "bot") {
+      const box = document.getElementById("chatMessages");
+      const div = document.createElement("div");
+      div.className = `chat-bubble ${role}`;
+      div.innerHTML = role === "bot" ? formatMarkdownSimple(text) : text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendQuickChat(text) {
+      document.getElementById("chatInput").value = text;
+      sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById("chatInput");
+      const msg = input.value.trim();
+      if (!msg) return;
+      input.value = "";
+      appendChatBubble(msg, "user");
+
+      const currentState = {
+        org_guid: state.orgGuid,
+        adventure_id: state.selectedAdventureId,
+        version_id: state.selectedVersionId,
+        user_ids: Array.from(state.selectedUserIds),
+        mode: state.scopeMode,
+        requirement_ids: Array.from(state.selectedReqIds),
+        status: document.getElementById("statusSelect").value,
+        completion_date: document.getElementById("completionDateInput").value,
+      };
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: msg,
+          org_guid: state.orgGuid,
+          current_state: currentState,
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        appendChatBubble(`Error: **${data.error || "Request failed"}**`, "bot");
+        return;
+      }
+
+      appendChatBubble(data.reply, "bot");
+
+      // Sync visual form state from chatbot ui_state
+      const ui = data.ui_state || {};
+      if (ui.adventure_id && ui.adventure_id !== state.selectedAdventureId) {
+        await selectAdventureById(Number(ui.adventure_id), ui.version_id ? Number(ui.version_id) : null);
+      }
+      if (ui.mode) {
+        setScopeMode(ui.mode);
+      }
+      if (Array.isArray(ui.requirement_ids) && ui.requirement_ids.length) {
+        state.selectedReqIds = new Set(ui.requirement_ids.map(Number));
+        renderRequirementsList();
+      }
+      if (ui.status) {
+        document.getElementById("statusSelect").value = ui.status;
+      }
+      if (ui.completion_date) {
+        document.getElementById("completionDateInput").value = ui.completion_date;
+      }
+      if (Array.isArray(ui.user_ids)) {
+        state.selectedUserIds = new Set(ui.user_ids.map(Number));
+        renderDenPills();
+        renderRosterTable();
+      }
+
+      const inspectorTarget = data.executed || data.preview;
+      if (inspectorTarget) {
+        document.getElementById("payloadPreviewContainer").style.display = "block";
+        document.getElementById("payloadEndpointLabel").textContent =
+          inspectorTarget.endpoint || "API Payload";
+        document.getElementById("payloadPreviewBox").textContent = JSON.stringify(
+          inspectorTarget.payload,
+          null,
+          2
+        );
+      }
+    }
+
+    // Login Modal Helpers
+    function openLoginModal() {
+      document.getElementById("loginErrorBanner").className = "banner error";
+      document.getElementById("loginModal").classList.add("open");
+    }
+
+    function closeLoginModal() {
+      document.getElementById("loginModal").classList.remove("open");
+    }
+
+    function switchLoginTab(tab) {
+      document.getElementById("tabBtnCreds").classList.toggle("active", tab === "creds");
+      document.getElementById("tabBtnToken").classList.toggle("active", tab === "token");
+      document.getElementById("loginTabCreds").style.display = tab === "creds" ? "block" : "none";
+      document.getElementById("loginTabToken").style.display = tab === "token" ? "block" : "none";
+    }
+
+    async function submitLoginCreds() {
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const errBanner = document.getElementById("loginErrorBanner");
+      errBanner.className = "banner error";
+
+      if (!username || !password) {
+        errBanner.textContent = "Please enter both your Scouting.org username and password.";
+        errBanner.classList.add("show");
+        return;
+      }
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        errBanner.textContent = data.error || "Authentication failed.";
+        errBanner.classList.add("show");
+        return;
+      }
+
+      document.getElementById("loginPassword").value = "";
+      closeLoginModal();
+      await onAuthenticated(data);
+      showBanner("Signed in to Scouting America (`api.scouting.org`).", "success");
+    }
+
+    async function submitLoginToken() {
+      const token = document.getElementById("loginTokenInput").value.trim();
+      const errBanner = document.getElementById("loginErrorBanner");
+      errBanner.className = "banner error";
+
+      if (!token) {
+        errBanner.textContent = "Please paste a valid Bearer JWT token.";
+        errBanner.classList.add("show");
+        return;
+      }
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        errBanner.textContent = data.error || "Token login failed.";
+        errBanner.classList.add("show");
+        return;
+      }
+
+      closeLoginModal();
+      await onAuthenticated(data);
+      showBanner("Connected using Bearer JWT token.", "success");
+    }
+  </script>
+</body>
+</html>
