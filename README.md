@@ -172,7 +172,20 @@ python3 test_scoutlook.py -v
 
 ---
 
-## Licensing
+## Fixes
+
+* The previous version of the catalog is no longer available in the API so it shouldn't have mismatches between the published catalog and the activities anymore.
+
+## WONTFIX
+
+* Any issue opened about how authentication still works with scouting.org after an account is suspended or closed is a WONTFIX. Their API is broken.
+* Scouts can be assigned completions and moved around even if they're dropped from a unit. This is a function of their API, not the software here.
+
+---
+
+## Licensing and Donation of the Tool
+
+A note on the donation: [I posted the tool](https://discussions.scouting.org/t/fixing-the-advancements-scouting-org-workflow/512480) to scouting.org and [Ed D'Avignon](https://discussions.scouting.org/u/edavignon/summary) hid the post without a message nor discussion. Don't expect this to be official functionality any time soon. For now it lives here as a pet project but the licensing offer still stands.
 
 This project is dual-licensed:
 
